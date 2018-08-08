@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "857223365942",
+    "firebase_url": "https://patuhoat-700e1.firebaseio.com",
+    "project_id": "patuhoat-700e1",
+    "storage_bucket": "patuhoat-700e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857223365942:android:f81fd94317e0b833",
+        "android_client_info": {
+          "package_name": "com.example.lideadwi.patuhoat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857223365942-9ed6d7pucok1299kfcueohop4koatin6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lideadwi.patuhoat",
+            "certificate_hash": "9b743c424b1b8416a915262eb1e3d2bd71dd644f"
+          }
+        },
+        {
+          "client_id": "857223365942-3oq6f24t76brgc9fldf036gth9l0n6if.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrdy-b5ekSglP3aAviAUWwjcrJfFVGQfY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857223365942-3oq6f24t76brgc9fldf036gth9l0n6if.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
