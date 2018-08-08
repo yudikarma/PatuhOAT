@@ -1,6 +1,8 @@
 package com.example.lideadwi.patuhoat.Adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -12,7 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.lideadwi.patuhoat.Activity.ChatsRoom;
+import com.example.lideadwi.patuhoat.Activity.ImageDetail;
 import com.example.lideadwi.patuhoat.Model.GetTimeAgo;
 import com.example.lideadwi.patuhoat.Model.Messages;
 import com.example.lideadwi.patuhoat.R;
@@ -41,10 +46,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private static final int VIEW_TYPE_OTHER = 2;
     private String userlogin = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private String role;
+    String URlImage;
+    private Context mContext;
 
     public MessageAdapter(List<Messages> mMessagesList) {
         this.mMessagesList = mMessagesList;
+
     }
+    public  MessageAdapter(Context context){
+        this.mContext = context;
+    }
+
 
     @NonNull
     @Override
@@ -56,7 +68,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull final MessageAdapter.MessageViewHolder holder, int position) {
-        Messages c = mMessagesList.get(position);
+        final Messages c = mMessagesList.get(position);
         final String from_user = c.getFrom();
         Long time = c.getTime();
         String Message_type = c.getType();
@@ -121,6 +133,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             Picasso.with(holder.profileImage.getContext()).load(c.getMessage())
                     .placeholder(R.drawable.default_avatar).into(holder.messageImage);
             GetTimeAgo getTimeAgo = new GetTimeAgo();
+            URlImage = c.getMessage();
+
+
 
 
             @SuppressLint("RestrictedApi") String lastSeenTime = getTimeAgo.getTimeAgo(time, getApplicationContext());
@@ -128,8 +143,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             // mLastView.setText(lastSeenTime);
             holder.time_text_layout.setText(lastSeenTime);
         }
+        holder.messageImage.setOnClickListener(new View.OnClickListener() {
+
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),ImageDetail.class);
+                intent.putExtra("url_image", URlImage);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+
+
+
+
+
+
+
+            }
+        });
+
+
 
     }
+
+
 
     @Override
     public int getItemCount() {

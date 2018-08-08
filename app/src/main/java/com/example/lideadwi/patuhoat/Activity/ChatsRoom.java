@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
@@ -12,7 +11,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,13 +19,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lideadwi.patuhoat.Adapter.MessageAdapter;
 import com.example.lideadwi.patuhoat.Menu.Chats;
@@ -49,11 +47,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -109,8 +103,11 @@ public class ChatsRoom extends AppCompatActivity {
     private String mPrevKey = "";
     private ImageButton mChatAddBtn;
     Uri imageUri;
-    private File compresImage;
-    String mCurrentPhotoPath;
+    Uri newsImageUri;
+    String imageFilePath;
+    File photofile = null;
+    Bitmap  thum_bitmap;
+    File thumb_file;
 
 
     @Override
@@ -125,7 +122,7 @@ public class ChatsRoom extends AppCompatActivity {
         mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ChatsRoom.this,Chats.class);
+                Intent intent = new Intent(ChatsRoom.this, Chats.class);
 
                 startActivity(intent);
                 finish();
@@ -135,7 +132,7 @@ public class ChatsRoom extends AppCompatActivity {
 
         actionBar.setDisplayShowCustomEnabled(true);
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View actionbar_view = layoutInflater.inflate(R.layout.chat_custom_bar,null);
+        View actionbar_view = layoutInflater.inflate(R.layout.chat_custom_bar, null);
         actionBar.setCustomView(actionbar_view);
 
         /* ==========Custom action bar item==========*/
@@ -196,9 +193,9 @@ public class ChatsRoom extends AppCompatActivity {
 
                 /*setMcCircleImageView(image);*/
 
-                if (online.equals("true")){
+                if (online.equals("true")) {
                     mLastView.setText("Online");
-                }else{
+                } else {
                     GetTimeAgo getTimeAgo = new GetTimeAgo();
 
                     long lastTime = Long.parseLong(online);
@@ -219,25 +216,23 @@ public class ChatsRoom extends AppCompatActivity {
         });
 
 
-
-
         mRootDatabaseReference.child("Chat").child(mCurrentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.hasChild(mChatuser)){
+                if (!dataSnapshot.hasChild(mChatuser)) {
 
                     Map chatAddMap = new HashMap();
                     chatAddMap.put("seen", false);
                     chatAddMap.put("timestamp", ServerValue.TIMESTAMP);
 
                     Map chatUserMap = new HashMap();
-                    chatUserMap.put("Chat/"+mCurrentUserId+"/"+mChatuser, chatAddMap);
-                    chatUserMap.put("Chat/"+mChatuser+"/"+mCurrentUserId, chatAddMap);
+                    chatUserMap.put("Chat/" + mCurrentUserId + "/" + mChatuser, chatAddMap);
+                    chatUserMap.put("Chat/" + mChatuser + "/" + mCurrentUserId, chatAddMap);
 
                     mRootDatabaseReference.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            if (databaseError != null){
+                            if (databaseError != null) {
                                 Log.d("CHAT_LOG", databaseError.getMessage().toString());
                             }
                         }
@@ -274,7 +269,7 @@ public class ChatsRoom extends AppCompatActivity {
             }
         });*/
 
-       //TAKE FOTO FROM CAMERA
+        //TAKE FOTO FROM CAMERA
         mChatAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -283,61 +278,49 @@ public class ChatsRoom extends AppCompatActivity {
                         == PackageManager.PERMISSION_DENIED) {
                     ActivityCompat.requestPermissions(ChatsRoom.this, new String[]{Manifest.permission.CAMERA}, REQUEST_IMAGE_CAPTURE);
 
-                } else {
+                }
+               else if (ContextCompat.checkSelfPermission(ChatsRoom.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_DENIED){
+                    ActivityCompat.requestPermissions(ChatsRoom.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_IMAGE_CAPTURE);
+                }else {
 
-
-
-                   /* final String dir =  Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+ "/PatuhOAT/";
-                    File newdir = new File(dir);
-                    newdir.mkdirs();
-                    String file = dir+ DateFormat.format("yyyy-MM-dd_hhmmss", new Date()).toString()+".jpg";
-
-                    File newfile  = new File(file);
-
-                    //Campres Image from camera
-                    try {
-                        compresImage = new Compressor(ChatsRoom.this)
-                                .setMaxHeight(640)
-                                .setMaxWidth(480)
-                                .setQuality(100)
-                                .setCompressFormat(Bitmap.CompressFormat.JPEG)
-                                .compressToFile(newfile);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    try {
-                        compresImage.createNewFile();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    imageUri = Uri.fromFile(compresImage);*/
-                   /* Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);*/
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                   // takePictureIntent.setType(Intent.ACTION_CAMERA_BUTTON);
+
 
                     if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                     /*   startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);*/
-                        File photoFile = null;
-                        photoFile = createImageFile();
-                        // Continue only if the File was successfully created
-                        if (photoFile != null) {
-                            Uri photoURI = FileProvider.getUriForFile(ChatsRoom.this,
-                                    "com.example.android.fileprovider",
-                                    photoFile);
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                        photofile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),timeStamp+"anu.jpg");
+
+
+
+
+
+
+
+                        if (photofile != null){
+
+
+
+                                Log.i("Thum File", ""+thumb_file);
+                                imageUri = Uri.fromFile(photofile);
+
+
+                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+
+                        }else {
+                            Toast.makeText(ChatsRoom.this, "PHOTO FILE NULL", Toast.LENGTH_LONG).show();
                         }
+
                     }
                 }
 
 
             }
         });
-
 
 
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -354,110 +337,104 @@ public class ChatsRoom extends AppCompatActivity {
             }
         });
     }
+    private static File getOutputMediaFile(){
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "PatuhAOT");
 
-    private File createImageFile() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES+"PATUHOAT");
-        File image = null;
-        try {
-            image = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".jpg",         /* suffix */
-                    storageDir      /* directory */
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!mediaStorageDir.exists()){
+            if (!mediaStorageDir.mkdirs()){
+                return null;
+            }
         }
 
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        return new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ timeStamp + ".jpg");
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
 
-           /* imageUri = data.getData();*/
-           Bundle extras = data.getExtras();
-           Bitmap bitmap = (Bitmap) extras.get("data");
-           imageUri = Uri.parse(String.valueOf(bitmap));
+            /* imageUri = data.getData();*/
 
 
-            final String current_user_ref = "messages/" + mCurrentUserId + "/" + mChatuser;
-            final String chat_user_ref = "messages/" + mChatuser + "/" + mCurrentUserId;
+            if (imageUri != null) {
 
-            DatabaseReference user_message_push = mRootDatabaseReference.child("messages")
-                    .child(mCurrentUserId).child(mChatuser).push();
+                try {
+                    File newsfile = new Compressor(ChatsRoom.this)
+                            .compressToFile(photofile);
+                    newsImageUri = Uri.fromFile(newsfile);
 
-            final String push_id = user_message_push.getKey();
-
-
-            StorageReference filepath = mImageStorage.child("message_images").child( push_id + ".jpg");
-
-            filepath.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                    if(task.isSuccessful()){
-
-                        String download_url = task.getResult().getDownloadUrl().toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
 
-                        Map messageMap = new HashMap();
-                        messageMap.put("message", download_url);
-                        messageMap.put("seen", false);
-                        messageMap.put("type", "image");
-                        messageMap.put("time", ServerValue.TIMESTAMP);
-                        messageMap.put("from", mCurrentUserId);
+                final String current_user_ref = "messages/" + mCurrentUserId + "/" + mChatuser;
+                final String chat_user_ref = "messages/" + mChatuser + "/" + mCurrentUserId;
 
-                        Map messageUserMap = new HashMap();
-                        messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
-                        messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
+                DatabaseReference user_message_push = mRootDatabaseReference.child("messages")
+                        .child(mCurrentUserId).child(mChatuser).push();
 
-                        mChatMessageView.setText("");
+                final String push_id = user_message_push.getKey();
 
-                        mRootDatabaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
-                                if(databaseError != null){
+                StorageReference filepath = mImageStorage.child("message_images").child(push_id + ".jpg");
 
-                                    Log.d("CHAT_LOG", databaseError.getMessage().toString());
+                filepath.putFile(newsImageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                        if (task.isSuccessful()) {
+
+                            String download_url = task.getResult().getDownloadUrl().toString();
+
+
+                            Map messageMap = new HashMap();
+                            messageMap.put("message", download_url);
+                            messageMap.put("seen", false);
+                            messageMap.put("type", "image");
+                            messageMap.put("time", ServerValue.TIMESTAMP);
+                            messageMap.put("from", mCurrentUserId);
+
+                            Map messageUserMap = new HashMap();
+                            messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+                            messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
+
+                            mChatMessageView.setText("");
+
+                            mRootDatabaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                                    if (databaseError != null) {
+
+                                        Log.d("CHAT_LOG", databaseError.getMessage().toString());
+
+                                    }
 
                                 }
+                            });
 
-                            }
-                        });
 
+                        }
 
                     }
+                });
 
-                }
-            });
+            } else {
+                Toast.makeText(ChatsRoom.this, "URI IS NULL", Toast.LENGTH_LONG).show();
+            }
 
         }
     }
 
 
-   /* public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
 
-    public String getRealPathFromURI(Uri uri) {
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-        return cursor.getString(idx);
-    }
-*/
 
     private void loadMoreMessages() {
         DatabaseReference messageRef = mRootDatabaseReference.child("messages").child(mCurrentUserId).child(mChatuser);
@@ -471,15 +448,14 @@ public class ChatsRoom extends AppCompatActivity {
                 Messages message = dataSnapshot.getValue(Messages.class);
                 String messageKey = dataSnapshot.getKey();
 
-                if (!mPrevKey.equals(messageKey)){
-                    messagesList.add(itemPos++,message);
-                }
-                else {
+                if (!mPrevKey.equals(messageKey)) {
+                    messagesList.add(itemPos++, message);
+                } else {
                     mPrevKey = mLastKey;
                 }
 
-                if (itemPos == 1){
-                    mLastKey =messageKey;
+                if (itemPos == 1) {
+                    mLastKey = messageKey;
                 }
                 Log.d("TOTALKEYS", "Last Key : " + mLastKey + " | Prev Key : " + mPrevKey + " | Message Key : " + messageKey);
 
@@ -525,9 +501,11 @@ public class ChatsRoom extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Messages message = dataSnapshot.getValue(Messages.class);
 
+
+
                 itemPos++;
 
-                if(itemPos == 1){
+                if (itemPos == 1) {
 
                     String messageKey = dataSnapshot.getKey();
 
@@ -543,6 +521,8 @@ public class ChatsRoom extends AppCompatActivity {
                 mMessagesList.scrollToPosition(messagesList.size() - 1);
 
                 mRefreshLayout.setRefreshing(false);
+
+
 
             }
 
@@ -568,17 +548,11 @@ public class ChatsRoom extends AppCompatActivity {
         });
 
 
-
-
-
-
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
 
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -599,10 +573,11 @@ public class ChatsRoom extends AppCompatActivity {
         mUserRef.child("online").setValue(ServerValue.TIMESTAMP);
     }
 
+
     private void sendMessage() {
 
         String message = mChatMessageView.getText().toString();
-        if (!TextUtils.isEmpty(message)){
+        if (!TextUtils.isEmpty(message)) {
             String current_user_ref = "messages/" + mCurrentUserId + "/" + mChatuser;
             String chat_user_ref = "messages/" + mChatuser + "/" + mCurrentUserId;
 
@@ -617,8 +592,8 @@ public class ChatsRoom extends AppCompatActivity {
             messageMap.put("from", mCurrentUserId);
 
             Map messageUserMap = new HashMap();
-            messageUserMap.put(current_user_ref+"/"+push_id,messageMap );
-            messageUserMap.put(chat_user_ref+"/"+push_id, messageMap);
+            messageUserMap.put(current_user_ref + "/" + push_id, messageMap);
+            messageUserMap.put(chat_user_ref + "/" + push_id, messageMap);
 
             mChatMessageView.setText(" ");
 
@@ -631,7 +606,7 @@ public class ChatsRoom extends AppCompatActivity {
             mRootDatabaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    if (databaseError != null){
+                    if (databaseError != null) {
                         Log.d("CHAT_LOG", databaseError.getMessage().toString());
                     }
                     // loadMessages();
@@ -641,29 +616,9 @@ public class ChatsRoom extends AppCompatActivity {
 
     }
 
-    public  void setMcCircleImageView(final String img_uri){
-        //Picasso.with(UsersActivity.this).load(img_uri).placeholder(R.drawable.user).into(mcCircleImageView);
-        if (!img_uri.equals("default")){
-            Picasso.with(ChatsRoom.this).load(img_uri).networkPolicy(NetworkPolicy.OFFLINE)
-                    .placeholder(R.drawable.default_avatar).into(mProfilImage, new Callback() {
-                @Override
-                public void onSuccess() {
 
-                }
-
-                @Override
-                public void onError() {
-                    Picasso.with(ChatsRoom.this).load(img_uri).placeholder(R.drawable.default_avatar).into(mProfilImage);
-
-                }
-            });
-
-        }else{
-            Picasso.with(ChatsRoom.this).load(R.drawable.default_avatar).into(mProfilImage);
-
-        }
-    }
-    public void setTime_text_layout(final long timesend){
+    public void setTime_text_layout(final long timesend) {
         time_text_layout.setText(String.valueOf(timesend));
     }
+
 }
