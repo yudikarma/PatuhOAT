@@ -43,7 +43,7 @@
             android:alpha="0.5"
             android:background="@android:color/white"
             android:padding="10dp"
-            app:srcCompat="@drawable/ic_add_black_24dp" />
+            app:srcCompat="@drawable/ic_camera_alt_black_24dp" />
 
         <EditText
             android:id="@+id/chat_message_view"

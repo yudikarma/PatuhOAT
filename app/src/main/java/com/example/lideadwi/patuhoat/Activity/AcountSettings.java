@@ -55,6 +55,7 @@ public class AcountSettings extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
     private ImageView btn_changestatus_settinng;
 
+    //Compress image before upload
     private Compressor compressedImageBitmap;
 
     //Firebase
@@ -66,6 +67,7 @@ public class AcountSettings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acount_settings);
 
+        //inisialisasi
         mCircleImageView = (CircleImageView) findViewById(R.id.circleImageView);
         mDisplayname = (TextView) findViewById(R.id.display_name_setting);
         mstatus = (TextView) findViewById(R.id.tstatus);
@@ -76,12 +78,16 @@ public class AcountSettings extends AppCompatActivity {
         address_setting = findViewById(R.id.address_settting);
         mProgressDialog = new ProgressDialog(this);
         btn_changeimage_setting = (FloatingActionButton) findViewById(R.id.change_image_setting);
-        mStorageReference = FirebaseStorage.getInstance().getReference();
 
+        //firebase inisialisasi
+        mStorageReference = FirebaseStorage.getInstance().getReference();
+        //get user login
         mCurrentuser = FirebaseAuth.getInstance().getCurrentUser();
+        //get uid user login
         final String uid = mCurrentuser.getUid();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
 
+        //method ofline
         mDatabaseReference.keepSynced(true);
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -159,10 +165,13 @@ public class AcountSettings extends AppCompatActivity {
         btn_changeimage_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Intent Galery Request
                 Intent galery_intent = new Intent();
                 galery_intent.setType("image/*");
                 galery_intent.setAction(Intent.ACTION_GET_CONTENT);
 
+                //Srart result
                 startActivityForResult(Intent.createChooser(galery_intent,"Select Image"),GALLERY_PICK);
             }
         });
@@ -174,7 +183,6 @@ public class AcountSettings extends AppCompatActivity {
                 Intent intent = new Intent(AcountSettings.this,ChangeStatus.class);
                 intent.putExtra("iduser", uid);
                 intent.putExtra("status", status);
-                /*intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);*/
                 startActivity(intent);
 
             }
@@ -184,13 +192,17 @@ public class AcountSettings extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        //check requset code dan result adter pick gambar
         if(requestCode==GALLERY_PICK && resultCode == RESULT_OK){
+            //Corp image
             Uri url = data.getData();
             CropImage.activity(url)
                     .setAspectRatio(1,1)
                     .start(AcountSettings.this);
-            //Toast.makeText(SettingActivity.this,url,Toast.LENGTH_SHORT).show();
+
         }
+        //Crop image request
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK){
@@ -199,10 +211,12 @@ public class AcountSettings extends AppCompatActivity {
                 mProgressDialog.setCanceledOnTouchOutside(false);
                 mProgressDialog.show();
 
+                //get uri dari gambar yang dipilih
                 Uri resultUri = result.getUri();
                 mCurrentuser = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = mCurrentuser.getUid();
 
+                //get path
                 File thum_file_path = new File(resultUri.getPath());
 
 

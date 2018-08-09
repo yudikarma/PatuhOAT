@@ -61,18 +61,16 @@ public class Registrasi extends AppCompatActivity implements AdapterView.OnItemS
 
         setContentView(R.layout.activity_registrasi);
         mAuth = FirebaseAuth.getInstance();
-       /* mToolbar = (Toolbar) findViewById(R.id.regist_app_bar);
+        mToolbar = (Toolbar) findViewById(R.id.registtoolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Registrasi");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Registrasi.this,LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                finish();
             }
-        });*/
+        });
 
         //Reference
 
@@ -115,7 +113,7 @@ public class Registrasi extends AppCompatActivity implements AdapterView.OnItemS
 
                 if (sjenisuser.equalsIgnoreCase("Dokter")){
                     skategoripengguna = sjenisuser;
-                    edisplayname = "DR. "+edisplayname;
+                    edisplayname = "Dr. "+edisplayname;
                 }else {
                     skategoripengguna = sjenisuser;
                 }

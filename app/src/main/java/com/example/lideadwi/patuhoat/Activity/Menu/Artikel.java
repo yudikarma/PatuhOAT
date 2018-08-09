@@ -1,4 +1,4 @@
-package com.example.lideadwi.patuhoat.Menu;
+package com.example.lideadwi.patuhoat.Activity.Menu;
 
 
 import android.os.Bundle;

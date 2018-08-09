@@ -33,6 +33,7 @@
         android:layout_marginStart="0dp"
         android:background="?android:attr/windowBackground"
         android:layout_alignParentBottom="true"
+
         app:menu="@menu/navigation" />
 
 

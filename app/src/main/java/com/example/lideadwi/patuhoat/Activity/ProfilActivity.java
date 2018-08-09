@@ -3,6 +3,7 @@ package com.example.lideadwi.patuhoat.Activity;
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -54,11 +55,24 @@ public class ProfilActivity extends AppCompatActivity {
 
     //string for status friend, "send","accep","friend",
     private String mCurrentState;
+    private Toolbar mtoolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profil);
+
+        //Navigation Toolbar
+        mtoolbar = (Toolbar) findViewById(R.id.profil_toolbar);
+        setSupportActionBar(mtoolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                finish();
+            }
+        });
 
         //get userid onclick user or user yang diklik
         final String userid = getIntent().getStringExtra("user_id");

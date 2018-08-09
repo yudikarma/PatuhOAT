@@ -19,7 +19,7 @@
     android:layout_height="match_parent"
     android:layout_below="@+id/activity2_chat"
     style="@style/Theme.AppCompat.Light.NoActionBar"
-    tools:context=".Menu.Chats">
+    tools:context=".Activity.Menu.Chats">
 
 
 

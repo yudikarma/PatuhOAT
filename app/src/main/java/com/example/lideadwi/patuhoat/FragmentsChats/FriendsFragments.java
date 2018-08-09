@@ -16,7 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.lideadwi.patuhoat.Activity.DetailUser;
+import com.example.lideadwi.patuhoat.Activity.ProfilActivity;
+import com.example.lideadwi.patuhoat.Activity.UserDetail;
 import com.example.lideadwi.patuhoat.Activity.ChatsRoom;
 import com.example.lideadwi.patuhoat.Model.Friends;
 import com.example.lideadwi.patuhoat.R;
@@ -123,7 +124,7 @@ public class FriendsFragments extends Fragment {
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                CharSequence options[] = new CharSequence[]{"Open Profile","Send Message"};
+                                CharSequence options[] = new CharSequence[]{"Open Profile","Send Message","Unfriends"};
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
                                 builder.setTitle("Select Options");
@@ -132,7 +133,7 @@ public class FriendsFragments extends Fragment {
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         //click event for each item
                                         if (i == 0){
-                                            Intent profilIntent = new Intent(getContext(),DetailUser.class);
+                                            Intent profilIntent = new Intent(getContext(),UserDetail.class);
                                             // i.putExtra("user_id",list_user_id);
                                             profilIntent.putExtra("user_id",list_user_id );
                                             startActivity(profilIntent);
@@ -144,6 +145,11 @@ public class FriendsFragments extends Fragment {
                                             profilIntent.putExtra("user_name",username);
                                             startActivity(profilIntent);
 
+                                        }if (i == 2){
+                                            Intent profilIntent = new Intent(getContext(),ProfilActivity.class);
+                                            // i.putExtra("user_id",list_user_id);
+                                            profilIntent.putExtra("user_id",list_user_id );
+                                            startActivity(profilIntent);
                                         }
                                     }
                                 });

@@ -11,12 +11,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
-import com.example.lideadwi.patuhoat.Menu.Artikel;
-import com.example.lideadwi.patuhoat.Menu.Chats;
-import com.example.lideadwi.patuhoat.Menu.Home;
+import com.example.lideadwi.patuhoat.Activity.Menu.Artikel;
+import com.example.lideadwi.patuhoat.Activity.Menu.Chats;
+import com.example.lideadwi.patuhoat.Activity.Menu.Home;
 import com.example.lideadwi.patuhoat.R;
-import com.example.lideadwi.patuhoat.Menu.Settings;
+import com.example.lideadwi.patuhoat.Activity.Menu.Settings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     setFragment(home);
+                    return true;
 
                 case R.id.navigation_artikel:
                     setFragment(artikel);
@@ -61,15 +63,16 @@ public class MainActivity extends AppCompatActivity {
                     setFragment(settings);
                     return true;
 
-                default:
 
-                        setFragment(home);
 
 
             }
             return false;
         }
     };
+
+
+
 
 
 
@@ -82,15 +85,18 @@ public class MainActivity extends AppCompatActivity {
 
         mFrameLayout = findViewById(R.id.main_frame);
 
+
         home = new Home();
         artikel = new Artikel();
         chats = new Chats();
         settings = new Settings();
+        setFragment(home);
 
 
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
@@ -100,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
+
+    }
+
+    //MEthod backpressed to exit
+    long back_pressed;
+
+    public void onBackPressed(){
+        if (back_pressed + 2000 > System.currentTimeMillis()) super.onBackPressed();
+        else Toast.makeText(getBaseContext(), "Press once again to exit!", Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
     }
 
     private void setFragment(Fragment fragment) {
@@ -159,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             mUserRef.child("online").setValue("true");
 
         }*/
-        setFragment(home);
+       /* setFragment(home);*/
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (!(currentUser != null)) {
             // !User is signed in
@@ -185,5 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
 
 }

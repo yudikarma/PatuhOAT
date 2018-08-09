@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lideadwi.patuhoat.R;
@@ -23,7 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 public class LoginActivity extends AppCompatActivity {
-    private LinearLayout regiSt;
+    private LinearLayout regiSt,mforgotpassword;
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -39,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
     private DatabaseReference muserDatabaseReference;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,16 @@ public class LoginActivity extends AppCompatActivity {
 
         regiSt =  findViewById(R.id.tvRegister);
         mpProgressDialog = new ProgressDialog(this);
+
+        //forgotpassword
+        mforgotpassword = findViewById(R.id.tvforgotpassword);
+        mforgotpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this,ResetPasswordActivity.class));
+
+            }
+        });
 
 
         //firebase

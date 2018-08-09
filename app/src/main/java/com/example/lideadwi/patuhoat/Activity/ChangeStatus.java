@@ -35,9 +35,7 @@ public class ChangeStatus extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ChangeStatus.this,AcountSettings.class);
 
-                startActivity(intent);
                 finish();
             }
         });
@@ -60,10 +58,7 @@ public class ChangeStatus extends AppCompatActivity {
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                             if (databaseError == null){
-                                Intent intent = new Intent(ChangeStatus.this,AcountSettings.class);
-                                /* intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);*/
 
-                                startActivity(intent);
                                 finish();
 
                             }else {

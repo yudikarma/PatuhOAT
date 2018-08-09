@@ -37,7 +37,7 @@
         <activity android:name=".Activity.ChangeStatus" />
         <activity android:name=".Activity.AllUserActivity" />
         <activity android:name=".Activity.ProfilActivity" />
-        <activity android:name=".Activity.DetailUser" />
+        <activity android:name=".Activity.UserDetail" />
         <activity android:name=".Activity.ChatsRoom" />
 
         <provider
@@ -47,10 +47,11 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".Activity.ImageDetail"></activity>
+        <activity android:name=".Activity.ImageDetail" />
+        <activity android:name=".Activity.ResetPasswordActivity"></activity>
     </application>
 
 </manifest>
