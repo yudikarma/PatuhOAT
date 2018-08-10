@@ -49,8 +49,6 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
-
-
         regiSt =  findViewById(R.id.tvRegister);
         mpProgressDialog = new ProgressDialog(this);
 
@@ -65,10 +63,10 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        //firebase
+        //firebase user database
         muserDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
 
-
+        //Auth user
         mAuth = FirebaseAuth.getInstance();
         mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     mpProgressDialog.setMessage("we are try connect your acount..");
                     mpProgressDialog.setCanceledOnTouchOutside(false);
                     mpProgressDialog.show();
+                   /* ======== Call method Login with email && password ========*/
                     loginUser(email,password);
 
                 }else {
@@ -92,23 +91,27 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+        //intent for registrasi
         regiSt =  findViewById(R.id.tvRegister);
         regiSt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this,Registrasi.class);
-                startActivity(i);
+
+                startActivity(new Intent(LoginActivity.this,Registrasi.class));
 
             }
         });
 
     }
+
+    //METHOD FOR LOGIN WiTH EMAIL && PASSWORD
     private void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
 
+                    //Token User for send Notification to device nantik
                     final String device_token = FirebaseInstanceId.getInstance().getToken();
                     final String current_user_id = mAuth.getCurrentUser().getUid();
 

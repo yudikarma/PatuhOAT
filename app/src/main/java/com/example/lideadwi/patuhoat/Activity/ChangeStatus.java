@@ -1,6 +1,5 @@
 package com.example.lideadwi.patuhoat.Activity;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,7 +19,7 @@ import java.util.Map;
 public class ChangeStatus extends AppCompatActivity {
     private EditText status;
     private Button simpan,back;
-    private DatabaseReference dokterdatabase;
+    private DatabaseReference Userdatabase;
     private Toolbar mToolbar;
 
     @Override
@@ -28,6 +27,7 @@ public class ChangeStatus extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_status);
 
+        //Toolbar action
         mToolbar = (Toolbar) findViewById(R.id.toolbarstatus);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Change Bio");
@@ -42,11 +42,12 @@ public class ChangeStatus extends AppCompatActivity {
         status = findViewById(R.id.edittextstatus);
         simpan = findViewById(R.id.simpan);
 
+        //Getting user id user
         final String userid = getIntent().getStringExtra("iduser");
         String statuss = getIntent().getStringExtra("status");
-        /* status.setText(statuss);*/
 
-        dokterdatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
+        //change with news status
+        Userdatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
         simpan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,7 +55,7 @@ public class ChangeStatus extends AppCompatActivity {
                 if (!newsstatus.isEmpty()){
                     Map update = new HashMap();
                     update.put("status",newsstatus );
-                    dokterdatabase.updateChildren(update, new DatabaseReference.CompletionListener() {
+                    Userdatabase.updateChildren(update, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                             if (databaseError == null){

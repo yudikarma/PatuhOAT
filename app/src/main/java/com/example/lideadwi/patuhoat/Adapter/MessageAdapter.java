@@ -39,20 +39,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private List<Messages> mMessagesList;
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
-    private DatabaseReference messageDatabase;
-    private DatabaseReference dokterdatabase;
-    private DatabaseReference pasiendatabase;
-    private static final int VIEW_TYPE_ME = 1;
-    private static final int VIEW_TYPE_OTHER = 2;
     private String userlogin = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private String role;
     String URlImage;
     private Context mContext;
 
+    //Construktor MessageAdapter list
     public MessageAdapter(List<Messages> mMessagesList) {
         this.mMessagesList = mMessagesList;
 
     }
+
+    //construktor message adapter contect
     public  MessageAdapter(Context context){
         this.mContext = context;
     }
@@ -68,14 +66,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull final MessageAdapter.MessageViewHolder holder, int position) {
+        //Getting child from Message database
+
+
         final Messages c = mMessagesList.get(position);
         final String from_user = c.getFrom();
         Long time = c.getTime();
         String Message_type = c.getType();
 
-        /*        ============================== SET JIKA PESAN DARI DIRISENDIRI PUT KE KANAN, KALO DARI ORANG PUT KE KIRI============*/
+        /*        ============ SET JIKA PESAN DARI DIRISENDIRI PUT KE KANAN, KALO DARI ORANG PUT KE KIRI============*/
         if (from_user.equals(userlogin)){
-            /* FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.itemBody.getLayoutParams();*/
             holder.itemBody.setGravity(Gravity.RIGHT);
             holder.displayName.setVisibility(View.GONE);
             holder.profileImage.setVisibility(View.GONE);
@@ -107,12 +107,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             }
         });
 
-        /*messageDatabase = FirebaseDatabase.getInstance().getReference().child()*/
+
 
 
         /* ====================== INI BAGIAN ATUR SETTextMessage ==============================*/
 
-
+        ///jika bertype text
         if (Message_type.equals("text")) {
             holder.messageText.setText(c.getMessage());
             holder.messageImage.setVisibility(View.GONE);
@@ -125,6 +125,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             // mLastView.setText(lastSeenTime);
             holder.time_text_layout.setText(lastSeenTime);
         } else {
+
+            //Jika bertype Image
             holder.messageText.setVisibility(View.INVISIBLE);
             holder.profileImage.setVisibility(View.GONE);
             holder.displayName.setVisibility(View.GONE);
@@ -143,6 +145,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             // mLastView.setText(lastSeenTime);
             holder.time_text_layout.setText(lastSeenTime);
         }
+
+        //Method for See Image Detail
         holder.messageImage.setOnClickListener(new View.OnClickListener() {
 
             @SuppressLint("RestrictedApi")
@@ -172,6 +176,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public int getItemCount() {
         return mMessagesList.size();
     }
+
+    //VIEW HOLDER CHATS ROOM
     public class MessageViewHolder extends RecyclerView.ViewHolder {
 
 

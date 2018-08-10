@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
 
 
+    //Method set freame onselectef Navigation
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         mFrameLayout = findViewById(R.id.main_frame);
 
-
+        //Inisialisasi Frame Bottom navigation
         home = new Home();
         artikel = new Artikel();
         chats = new Chats();
@@ -93,11 +94,12 @@ public class MainActivity extends AppCompatActivity {
         setFragment(home);
 
 
-
+        //set bottom navigation method
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         
 
+        //Getting Uid user
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
 
@@ -119,12 +121,14 @@ public class MainActivity extends AppCompatActivity {
         back_pressed = System.currentTimeMillis();
     }
 
+    //Method set Fragment
     private void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame, fragment);
         fragmentTransaction.commit();
     }
 
+    //Method panggil menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -135,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //Method Menu selected
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -166,17 +171,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        /*FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser == null){
 
-            sendTostart();
-
-        } else {
-
-            mUserRef.child("online").setValue("true");
-
-        }*/
-       /* setFragment(home);*/
+        //ketika aplikasi pertama kali dibuka,
+        //check apakah user dalam keadaan login.
+        //jika iya setonline
+        //jika tidak kirim ke activity login
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (!(currentUser != null)) {
             // !User is signed in
@@ -194,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+
+        //Getting waktu terakhir online
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null) {

@@ -32,6 +32,9 @@
         android:layout_marginEnd="0dp"
         android:layout_marginStart="0dp"
         android:background="?android:attr/windowBackground"
+        app:itemTextColor="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimaryDark"
+
         android:layout_alignParentBottom="true"
 
         app:menu="@menu/navigation" />

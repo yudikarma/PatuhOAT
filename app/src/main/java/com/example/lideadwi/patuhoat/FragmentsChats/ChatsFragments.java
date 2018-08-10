@@ -43,17 +43,17 @@ public class ChatsFragments extends Fragment {
 
     private RecyclerView mConvList;
 
+    //inisialisasi firebase database
     private DatabaseReference mConvDatabase;
     private DatabaseReference mMessageDatabase;
     private DatabaseReference mUsersDatabase;
     private DatabaseReference mUserRef;
 
+    //Auth User
     private FirebaseAuth mAuth;
-
     private String mCurrent_user_id;
 
-    private View mMainView;
-
+    //Recycle Adapter
     private FirebaseRecyclerAdapter<Conv,ConvViewHolder> adapter;
     private   String  http = "Test";
     private TextView notifnull;
@@ -67,9 +67,10 @@ public class ChatsFragments extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View mMainView = inflater.inflate(R.layout.fragment_chats_fragments, container, false);
 
+        //Inisialisasi All layout
         mConvList = (RecyclerView) mMainView.findViewById(R.id.conv_list);
         mAuth = FirebaseAuth.getInstance();
 
@@ -77,47 +78,61 @@ public class ChatsFragments extends Fragment {
 
         mCurrent_user_id = mAuth.getCurrentUser().getUid();
 
+        //Database Chats
         mConvDatabase = FirebaseDatabase.getInstance().getReference().child("Chat").child(mCurrent_user_id);
         mConvDatabase.keepSynced(true);
+
+        //Database Users
         mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
+        mUsersDatabase.keepSynced(true);
+
+        //Database Message
         mMessageDatabase = FirebaseDatabase.getInstance().getReference().child("messages").child(mCurrent_user_id);
         mMessageDatabase.keepSynced(true);
-        mUsersDatabase.keepSynced(true);
+
+        //User Login Ref
         mUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid()); //=> user yang login
         mUserRef.keepSynced(true);
 
+        //Setting recycle view
         mConvList.setHasFixedSize(true);
         mConvList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        //Query
+        //Query for firebase ui
         Query conversationQuery = mConvDatabase.orderByChild("timestamp").limitToLast(50);
 
+        //options (Firebas ui)
         FirebaseRecyclerOptions<Conv> options =
                 new FirebaseRecyclerOptions.Builder<Conv>()
                         .setQuery(conversationQuery, Conv.class)
                         .setLifecycleOwner(this)
                         .build();
 
+        //Adapter (Firebas UI)
         adapter = new FirebaseRecyclerAdapter<Conv, ConvViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final ConvViewHolder holder, int position, @NonNull final Conv model) {
 
+                //Mendapatkan Uid dari list user
                 final String list_user_id = getRef(position).getKey();
 
+                //QUery untuk mendapatkan pesan terakhir
                 Query lastMessageQuery = mMessageDatabase.child(list_user_id).limitToLast(1);
 
                 lastMessageQuery.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        //mendapatkan isi pesan
                         String data = dataSnapshot.child("message").getValue().toString();
+                        //mendapatkan pengirim pesan
                         String fromUser = dataSnapshot.child("from").getValue().toString();
-                        /*holder.setMessage(data, model.isSeen());*/
 
+                        /*// ================== METHOD JIKA ISi PESAN TERAKHIR ADALAH IMAGE*/
 
                         if (!data.isEmpty() && data != null && data.length() >= 10){
                             String http = data.substring(0, 4);
                             if (http.equalsIgnoreCase("http")){
-                                //holder.setMessage("", model.isSeen());
+
                                 if (fromUser.equalsIgnoreCase(mCurrent_user_id)){
                                     holder.setMessage("Anda Mengirim Foto", model.isSeen());
                                 }else {
@@ -164,6 +179,8 @@ public class ChatsFragments extends Fragment {
                     }
                 });
 
+
+                //mendapatkan Informasi user
                 mUsersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -180,6 +197,7 @@ public class ChatsFragments extends Fragment {
                         holder.setName(userName);
                         holder.setUserImage(userThumb, getContext());
 
+                        //set onclick User kemudian intent ke chatrooms
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -190,6 +208,7 @@ public class ChatsFragments extends Fragment {
                             }
                         });
 
+                        //SET On Long Click To Delete pesan
                         holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
@@ -230,6 +249,10 @@ public class ChatsFragments extends Fragment {
                 return  new ConvViewHolder(mView);
             }
         };
+
+       /* //Jika lIst null then notif
+        //else
+        //recyclelist.setadapter(adapter)*/
         FirebaseDatabase.getInstance().getReference().child("Chat").child(mCurrent_user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -250,6 +273,7 @@ public class ChatsFragments extends Fragment {
 
 
 
+
         return  mMainView;
     }
 
@@ -257,7 +281,7 @@ public class ChatsFragments extends Fragment {
     public void onStart() {
         super.onStart();
 
-
+        //important to firebase database ui
         adapter.startListening();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -268,6 +292,8 @@ public class ChatsFragments extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+
+        //important to firebase database ui
         adapter.stopListening();
     }
 

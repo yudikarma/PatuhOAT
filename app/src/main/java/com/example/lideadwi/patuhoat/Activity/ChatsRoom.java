@@ -91,6 +91,7 @@ public class ChatsRoom extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
 
+
     // Storage Firebase
     private StorageReference mImageStorage;
 
@@ -438,6 +439,7 @@ public class ChatsRoom extends AppCompatActivity {
     /* ========== Method laod message on Refresh swipe =========*/
     private void loadMoreMessages() {
         DatabaseReference messageRef = mRootDatabaseReference.child("messages").child(mCurrentUserId).child(mChatuser);
+        messageRef.keepSynced(true);
 
         Query messageQuery = messageRef.orderByKey().endAt(mLastKey).limitToLast(10);
 
@@ -463,7 +465,7 @@ public class ChatsRoom extends AppCompatActivity {
 
                 mRefreshLayout.setRefreshing(false);
 
-                mLinearLayout.scrollToPositionWithOffset(10, 0);
+                mLinearLayout.scrollToPositionWithOffset(itemPos, 0);
 
             }
 
@@ -495,6 +497,7 @@ public class ChatsRoom extends AppCompatActivity {
     private void loadMessages() {
 
         DatabaseReference messageRef = mRootDatabaseReference.child("messages").child(mCurrentUserId).child(mChatuser);
+        messageRef.keepSynced(true);
 
         Query messageQuery = messageRef.limitToLast(mCurrentPage * TOTAL_ITEMS_TO_LOAD);
 

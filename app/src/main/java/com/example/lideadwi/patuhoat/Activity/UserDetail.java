@@ -28,7 +28,7 @@ public class UserDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_user);
 
-        setContentView(R.layout.activity_detail_user);
+        //Inisialisasi layout
         mDisplayname = findViewById(R.id.display_name_detail);
         jumlahteman = findViewById(R.id.jumlahtemandetail);
         jumlahrekammedis = findViewById(R.id.jumlahrequestriend);
@@ -39,7 +39,10 @@ public class UserDetail extends AppCompatActivity {
 
         mCircleImageView = findViewById(R.id.circleImageViewdetail);
 
+        //Getting id user from Putextra intent. (Data yang dikirim dari kelas lain melallui intent)
         iduser = getIntent().getStringExtra("user_id");
+
+        //Method Set Biodata user
         FirebaseDatabase.getInstance().getReference().child("Users").child(iduser).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

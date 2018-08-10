@@ -276,9 +276,7 @@ public class ProfilActivity extends AppCompatActivity {
                                 btn_sendrequest.setEnabled(true);
                                 mCurrentState = "friend";
                                 btn_sendrequest.setText("Unfriend This person");
-/*
-                                btn_declineFriend.setVisibility(view.INVISIBLE);
-                                btn_declineFriend.setEnabled(false);*/
+
                                 mProgressDialog.dismiss();
                             }else{
                                 String error = databaseError.getMessage();

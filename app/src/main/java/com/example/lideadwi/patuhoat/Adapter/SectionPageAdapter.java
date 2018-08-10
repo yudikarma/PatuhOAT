@@ -16,6 +16,8 @@ public class SectionPageAdapter extends FragmentPagerAdapter {
     }
 
 
+
+    //BAGIAN ATUR FRAGMENT ON TAB SELECTION
     @Override
     public Fragment getItem(int position) {
         switch(position) {
@@ -38,6 +40,7 @@ public class SectionPageAdapter extends FragmentPagerAdapter {
         return 3;
     }
 
+    //BAGIAN ATUR TEXt TItle TABS
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position){

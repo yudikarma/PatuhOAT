@@ -10,7 +10,7 @@
         android:id="@+id/profil_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/birumuda"
+        android:background="@color/colorPrimary"
         app:titleTextColor="@color/colorWhitemuda"
         app:title="Profil User"
 

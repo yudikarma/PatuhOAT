@@ -51,6 +51,7 @@ public class AllUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_user);
 
+        //database ref users
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         mDatabaseReference.keepSynced(true);
 
@@ -69,18 +70,21 @@ public class AllUserActivity extends AppCompatActivity {
 
         notifnull = findViewById(R.id.notifnulluser);
 
+        //Recycle view
         mListView = (RecyclerView) findViewById(R.id.user_list);
         mListView.setHasFixedSize(true);
         mListView.setLayoutManager(new LinearLayoutManager(this));
+
+        //set query
         Query query = FirebaseDatabase.getInstance().getReference().child("Users").limitToLast(50);
 
-
+        //set Options
         FirebaseRecyclerOptions<Users> options =
                 new FirebaseRecyclerOptions.Builder<Users>()
                         .setQuery(query, Users.class)
                         .setLifecycleOwner(this)
                         .build();
-
+        //Set adapter from Recycle firebased database ui
         adapter = new FirebaseRecyclerAdapter<Users, UserviewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull UserviewHolder holder, int position, @NonNull Users model) {
@@ -122,6 +126,7 @@ public class AllUserActivity extends AppCompatActivity {
                 return new UserviewHolder(mView);
             }
         };
+        //if data != null setadapter to friendlist
         FirebaseDatabase.getInstance().getReference().child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -146,7 +151,7 @@ public class AllUserActivity extends AppCompatActivity {
         super.onStart();
 
 
-
+        //important for fibrebase database ui
         adapter.startListening();
 
 
@@ -156,9 +161,11 @@ public class AllUserActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        //important for fibrebase database ui
         adapter.stopListening();
     }
 
+    //VIEW HOLDER
     public class UserviewHolder extends RecyclerView.ViewHolder {
         View mView;
         TextView mdisplayname,mstatus ;

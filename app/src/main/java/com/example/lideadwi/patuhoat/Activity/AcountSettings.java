@@ -236,7 +236,7 @@ public class AcountSettings extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()){
-                            //Toast.makeText(SettingActivity.this,"working",Toast.LENGTH_LONG).show();
+                           //getdownload uri
                             final String downloadUri = task.getResult().getDownloadUrl().toString();
 
                             //upload task thumb

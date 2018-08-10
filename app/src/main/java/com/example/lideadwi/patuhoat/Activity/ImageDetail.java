@@ -17,8 +17,8 @@ public class ImageDetail extends AppCompatActivity {
         setContentView(R.layout.activity_image_detail);
         mImageView = findViewById(R.id.full_image);
 
+        //Getting Image Uri then show in imageview
         String urlImage = getIntent().getStringExtra("url_image");
-
         picasso.with(ImageDetail.this).load(urlImage).placeholder(R.drawable.default_avatar).into(mImageView);
     }
 }
